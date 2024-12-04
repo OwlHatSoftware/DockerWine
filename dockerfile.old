@@ -1,0 +1,36 @@
+FROM ubuntu:24.04
+LABEL maintainer="jacco@owlhatsoftware.com"
+
+#This image i created to run windows service apps build with delphi
+#so there is no need for mono or other .NET related stuff
+
+USER root
+
+ENV WINEDEBUG=-all
+
+# Install 64 bit wine and related packages
+RUN apt-get update && apt-get install -y --no-install-recommends wine wine64
+
+# Use the latest version of winetricks
+RUN apt-get install -y winetricks
+
+#Create a passwordless user 
+RUN adduser devuser --home /home/devuser --shell /bin/bash
+RUN usermod -aG sudo devuser 
+RUN passwd -d devuser
+
+# Wine really doesn't like to be run as root, so let's use a non-root user
+USER devuser
+#ENV HOME=/home/devuser
+#ENV WINEPREFIX=/home/devuser/.wine
+#ENV WINEARCH=win64
+RUN mkdir /home/devuser/.wine
+
+# Use devuser home dir as working dir
+WORKDIR /home/devuser
+
+ADD /demo/Win64/Release/demo.exe /home/devuser/demo.exe
+ADD startup.sh /home/devuser/startup.sh
+
+#run the app
+#CMD ["startup.sh"]
