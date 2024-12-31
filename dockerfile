@@ -1,5 +1,8 @@
-# Updated to Ubuntu 22.04
-FROM ubuntu:22.04
+# Updated to Ubuntu 24.04
+FROM ubuntu:24.04
+
+# Use baseimage-docker's init system.
+#CMD ["/sbin/my_init"]
            
 # Download/install WineHQ key (linking the ADD layer to the FROM layer)
 # This way we don't need the wget command to get download the key file
@@ -35,6 +38,8 @@ WORKDIR /root/demo
 # create 64-bit wine runtime directory (one time only)
 #RUN Winearch=win64 WINEPREFIX=/root/demo/.wine64 winecfg
 
+#make a URL reservation
+RUN wine64 netsh http add urlacl url=http://+:2001/auth user=Everyone
     
 # Copy files into container and link the COPY instructions
 # to the previously created WORKDIR layer
